@@ -2,6 +2,7 @@ package base64
 
 import (
 	"testing"
+
 	"github.com/google/uuid"
 	"github.com/zapote/base64/assert"
 )
@@ -9,7 +10,7 @@ import (
 func TestIDMarshalJson(t *testing.T) {
 	enc := "\"MWUyZDNiNzAtODM0Ni00N2E2LTgzNDktYTVlZjAxMTIxZmEy\""
 	v, _ := uuid.Parse("1E2D3B70-8346-47A6-8349-A5EF01121FA2")
-	ts := ID{
+	ts := UUID{
 		Value: v,
 	}
 
@@ -39,7 +40,7 @@ func TestIDUnmarshalJSON(t *testing.T) {
 
 	for _, c := range tc {
 		t.Run(c.name, func(t *testing.T) {
-			act := ID{}
+			act := UUID{}
 			err := act.UnmarshalJSON(c.enc)
 			if err != nil {
 				t.Error(err)
@@ -60,7 +61,7 @@ func TestIDScan(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(c.name, func(*testing.T) {
-			ts := ID{}
+			ts := UUID{}
 			err := ts.Scan(c.exp.String())
 
 			if err != nil {

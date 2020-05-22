@@ -9,42 +9,42 @@ import (
 	"github.com/google/uuid"
 )
 
-//ID is a base64 endcoded uuid.UUID
-type ID struct {
+//UUID is a base64 endcoded uuid.UUID
+type UUID struct {
 	Value uuid.UUID
 }
 
-//NewID creates a new NewBase64ID
-func NewID(v uuid.UUID) ID {
-	b := ID{v}
+//NewUUID creates a new NewBase64ID
+func NewUUID(v uuid.UUID) UUID {
+	b := UUID{v}
 	return b
 }
 
-//NewIDFromEncoded creates a new base64.ID from a base64 encoded string
-func NewIDFromEncoded(s string) ID {
+//NewUUIDFromEncoded creates a new base64.ID from a base64 encoded string
+func NewUUIDFromEncoded(s string) UUID {
 	v, err := decodeFromBase64ID(s)
 
 	if err != nil {
-		return ID{}
+		return UUID{}
 	}
 
-	b := ID{v}
+	b := UUID{v}
 	return b
 }
 
-func (b *ID) String() string {
+func (b *UUID) String() string {
 	return b.Value.String()
 }
 
 //MarshalJSON handles json marshal
-func (b ID) MarshalJSON() ([]byte, error) {
+func (b UUID) MarshalJSON() ([]byte, error) {
 	buff := []byte(b.String())
 	s := b64.RawStdEncoding.EncodeToString(buff)
 	return json.Marshal(s)
 }
 
 //UnmarshalJSON handles json unmarshal
-func (b *ID) UnmarshalJSON(data []byte) error {
+func (b *UUID) UnmarshalJSON(data []byte) error {
 	str := string(data)
 	v, err := decodeFromBase64ID(str)
 	if err != nil {
@@ -55,7 +55,7 @@ func (b *ID) UnmarshalJSON(data []byte) error {
 }
 
 //Scan ID
-func (b *ID) Scan(value interface{}) error {
+func (b *UUID) Scan(value interface{}) error {
 	err := b.Value.Scan(value)
 
 	if err != nil {
