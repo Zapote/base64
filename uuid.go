@@ -21,15 +21,15 @@ func NewUUID(v uuid.UUID) UUID {
 }
 
 //NewUUIDFromEncoded creates a new base64.ID from a base64 encoded string
-func NewUUIDFromEncoded(s string) UUID {
+func NewUUIDFromEncoded(s string) (UUID, error) {
 	v, err := decodeFromBase64ID(s)
 
 	if err != nil {
-		return UUID{}
+		return UUID{}, fmt.Errorf("Could not decode: %s", err.Error())
 	}
 
 	b := UUID{v}
-	return b
+	return b, nil
 }
 
 func (b *UUID) String() string {
