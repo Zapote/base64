@@ -5,8 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
-
-	"github.com/google/uuid"
+	"uuid"
 )
 
 //UUID is a base64 endcoded uuid.UUID
@@ -54,19 +53,38 @@ func (b *UUID) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-//Scan ID
+// Scan implements sql.Scanner. Accepts a UUID string, a 16-byte slice or a
+// textual byte slice; nil and empty values leave b untouched.
 func (b *UUID) Scan(value interface{}) error {
-	err := b.Value.Scan(value)
-
-	if err != nil {
-		return err
+	switch v := value.(type) {
+	case nil:
+		return nil
+	case string:
+		if v == "" {
+			return nil
+		}
+		u, err := uuid.Parse(v)
+		if err != nil {
+			return fmt.Errorf("Scan: %v", err)
+		}
+		b.Value = u
+	case []byte:
+		if len(v) == 0 {
+			return nil
+		}
+		if len(v) != 16 {
+			return b.Scan(string(v))
+		}
+		copy(b.Value[:], v)
+	default:
+		return fmt.Errorf("Scan: unable to scan type %T into UUID", value)
 	}
-
 	return nil
 }
 
 func decodeFromBase64ID(s string) (uuid.UUID, error) {
-	res, err := b64.RawStdEncoding.DecodeString(strings.Trim(s, "\""))
+	s = strings.Trim(s, "\"")
+	res, err := b64.RawStdEncoding.DecodeString(s)
 	if err != nil {
 		res = []byte(s)
 	}

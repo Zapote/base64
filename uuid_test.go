@@ -2,8 +2,8 @@ package base64
 
 import (
 	"testing"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/zapote/base64/assert"
 )
 
@@ -74,4 +74,35 @@ func TestIDScan(t *testing.T) {
 		})
 	}
 
+}
+
+func TestIDScanVariants(t *testing.T) {
+	exp := uuid.MustParse("1e2d3b70-8346-47a6-8349-a5ef01121fa2")
+	raw := exp[:]
+
+	cases := []struct {
+		name string
+		src  interface{}
+		exp  uuid.UUID
+	}{
+		{"16 raw bytes", raw, exp},
+		{"textual bytes", []byte(exp.String()), exp},
+		{"empty string leaves nil uuid", "", uuid.UUID{}},
+		{"nil leaves nil uuid", nil, uuid.UUID{}},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			ts := UUID{}
+			if err := ts.Scan(c.src); err != nil {
+				t.Fatal(err)
+			}
+			if ts.Value != c.exp {
+				t.Errorf("got %v, want %v", ts.Value, c.exp)
+			}
+		})
+	}
+
+	if err := (&UUID{}).Scan(42); err == nil {
+		t.Error("expected error for unsupported type")
+	}
 }

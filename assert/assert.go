@@ -19,13 +19,13 @@ func IsTrue(t *testing.T, a bool, message string) {
 		return
 	}
 
-	t.Errorf(message)
+	t.Error(message)
 }
 
 // IsFalse checks if value is false
 func IsFalse(t *testing.T, a bool, message string) {
 	if a {
-		t.Errorf(message)
+		t.Error(message)
 	}
 }
 
